@@ -1,0 +1,39 @@
+-- Tạo bảng công ty
+CREATE TABLE company (
+    company_id INT PRIMARY KEY AUTO_INCREMENT,
+    company_name VARCHAR(255) NOT NULL
+);
+
+-- Tạo bảng dự án
+CREATE TABLE project (
+    project_id INT PRIMARY KEY AUTO_INCREMENT,
+    project_name VARCHAR(255) NOT NULL,
+    company_id INT,
+    FOREIGN KEY (company_id) REFERENCES company(company_id)
+);
+
+-- Tạo bảng task
+CREATE TABLE task (
+    task_id INT PRIMARY KEY AUTO_INCREMENT,
+    task_name VARCHAR(255) NOT NULL,
+    time INT NOT NULL,
+    project_id INT,
+    FOREIGN KEY (project_id) REFERENCES project(project_id)
+);
+
+-- Chèn dữ liệu vào bảng công ty
+INSERT INTO company (company_name) VALUES ('Company A'), ('Company B');
+
+-- Chèn dữ liệu vào bảng dự án
+INSERT INTO project (project_name, company_id) VALUES
+    ('Project 1', 1),
+    ('Project 2', 1),
+    ('Project 3', 2);
+
+-- Chèn dữ liệu vào bảng task
+INSERT INTO task (task_name, time, project_id) VALUES
+    ('Task A1', 10, 1),
+    ('Task A2', 15, 1),
+    ('Task B1', 12, 2),
+    ('Task B2', 8, 2),
+    ('Task C1', 20, 3);

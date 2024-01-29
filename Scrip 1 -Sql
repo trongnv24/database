@@ -1,0 +1,78 @@
+--> Hiển thị danh sách tất cả các công ty và số lượng dự án mà mỗi công ty đang thực hiện:
+SELECT
+    c.company_id,
+    c.company_name,
+    COUNT(p.project_id) AS total_projects
+FROM
+    company c
+LEFT JOIN
+    project p ON c.company_id = p.company_id
+GROUP BY
+    c.company_id, c.company_name;
+--Tạo bảng company:
+CREATE TABLE company (
+    company_id INT PRIMARY KEY AUTO_INCREMENT,
+    company_name VARCHAR(255) NOT NULL
+); -- Chèn dữ liệu vào bảng công ty
+  INSERT INTO company (company_name) VALUES ('Company A'), ('Company B');
+--> Lấy thông tin về mỗi dự án, bao gồm tên dự án, tên công ty, và tổng số giờ ước tính để hoàn thành tất cả các task trong dự án:
+SELECT
+    p.project_name,
+    c.company_name,
+    SUM(t.time) AS total_hours
+FROM
+    project p
+JOIN
+    company c ON p.company_id = c.company_id
+JOIN
+    task t ON p.project_id = t.project_id
+GROUP BY
+    p.project_id, p.project_name, c.company_name;
+--> Lấy thông tin về tất cả các task trong một dự án cụ thể, bao gồm tên task, số giờ dự kiến và thực tế để hoàn thành task:
+SELECT
+    t.task_name,
+    t.time AS estimated_hours,
+    COALESCE(t.actual_time, 0) AS actual_hours
+FROM
+    task t
+WHERE
+    t.project_id = 1; -- Đặt ID của dự án cụ thể ở đây
+--> Nâng cấp hệ thống và thêm bảng employee:
+-- Thêm bảng employee
+CREATE TABLE employee (
+    employee_id INT PRIMARY KEY AUTO_INCREMENT,
+    employee_name VARCHAR(255)
+);
+
+-- Thêm cột employee_id vào bảng task
+ALTER TABLE task
+ADD COLUMN employee_id INT,
+ADD FOREIGN KEY (employee_id) REFERENCES employee(employee_id);
+
+-- Chèn dữ liệu vào bảng employee
+INSERT INTO employee (employee_name) VALUES ('Employee 1'), ('Employee 2'), ('Employee 3');
+
+-- Cập nhật các task với thông tin về người thực hiện
+UPDATE task
+SET employee_id = 1
+WHERE task_name IN ('Task A1', 'Task A2');
+
+UPDATE task
+SET employee_id = 2
+WHERE task_name IN ('Task B1', 'Task B2');
+
+UPDATE task
+SET employee_id = 3
+WHERE task_name = 'Task C1';
+--> Tính tổng số giờ đã dành cho mỗi nhân viên trên tất cả các task mà họ đã thực hiện:
+SELECT
+    e.employee_id,
+    e.employee_name,
+    SUM(t.actual_time) AS total_hours
+FROM
+    employee e
+LEFT JOIN
+    task t ON e.employee_id = t.employee_id
+GROUP BY
+    e.employee_id, e.employee_name;
+
